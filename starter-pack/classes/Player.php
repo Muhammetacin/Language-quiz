@@ -12,4 +12,8 @@ class Player
         $this->score = $score;
         $this->playerName = '👤' . $playerName;
     }
+
+    public function updateScore() : int {
+        return $this->score + 1;
+    }
 }
