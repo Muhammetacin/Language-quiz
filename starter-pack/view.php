@@ -11,6 +11,7 @@
 <body>
 	<!-- TODO: add a form for the user to play the game -->
 	<h1>Language game! Translate correctly to earn points</h1>
+	<h2>Score: <?php echo $game->player->getScore() ?></h2>
 
 	<h2>Your word to translate is: <i><?php echo $_SESSION['word'] ?? $game->randomWord ?></i></h2>
 
