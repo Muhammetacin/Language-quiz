@@ -4,6 +4,7 @@ class LanguageGame
 {
     private array $words;
     public string $randomWord;
+    public string $resultMessage = 'Your translation is...';
 
     public function __construct()
     {
@@ -16,16 +17,45 @@ class LanguageGame
         }
     }
 
+    public function pre_r($arr)
+    {
+        echo '<pre>';
+        print_r($arr);
+        echo '</pre>';
+    }
+
     public function run(): void
     {
-        // TODO: check for option A or B
+        // check for option A or B
+        if (empty($_POST['answer'])) {
+            // Option A: user visits site first time (or wants a new word)
+            // select a random word for the user to translate   
+            $randomWordObject = $this->words[rand(0, 7)];
+            $this->randomWord = $randomWordObject->getWord();
+            $_SESSION['word'] = $this->randomWord;
+        } else {
+            // Option B: user has just submitted an answer
+            // verify the answer (use the verify function in the word class) - you'll need to get the used word from the array first
+            $this->randomWord = $_SESSION['word'];
+            $userInput = $_POST['answer'];
+            $result = false;
 
-        // Option A: user visits site first time (or wants a new word)
-        // select a random word for the user to translate
-        $this->randomWord = $this->words[rand(0, 7)]->getWord();
+            foreach ($this->words as $wordObject) {
+                if ($wordObject->getWord() === $this->randomWord) {
+                    $result = $wordObject->verify($userInput);
+                }
+            }
 
-        // Option B: user has just submitted an answer
-        // TODO: verify the answer (use the verify function in the word class) - you'll need to get the used word from the array first
-        // TODO: generate a message for the user that can be shown
+            // generate a message for the user that can be shown
+            if ($result) {
+                $this->resultMessage = 'Your translation is correct! You answered ' . $userInput . '.';
+            }
+            if (!$result) {
+                $this->resultMessage = 'Your translation is incorrect :( You answered ' . $userInput . '.';
+            }
+
+            // Refresh page in 1 second --> new word
+            header("Refresh:1");
+        }
     }
 }

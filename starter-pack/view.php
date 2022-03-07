@@ -12,7 +12,14 @@
 	<!-- TODO: add a form for the user to play the game -->
 	<h1>Language game! Translate correctly to earn points</h1>
 
-	<h2>Your word to translate is: <i><?php echo $game->randomWord ?></i></h2>
+	<h2>Your word to translate is: <i><?php echo $_SESSION['word'] ?? $game->randomWord ?></i></h2>
+
+	<form action="index.php" method="post">
+		Translation: <input type="text" name="answer">
+		<input type="submit" value="submit">
+	</form>
+
+	<p><?php echo $game->resultMessage ?></p>
 </body>
 
 </html>

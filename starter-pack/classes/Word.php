@@ -15,9 +15,12 @@ class Word
 
     public function verify(string $answer): bool
     {
-        // TODO: use this function to verify if the provided answer by the user matches the correct one
-        return false;
+        // use this function to verify if the provided answer by the user matches the correct one
         // Bonus: allow answers with different casing (example: both bread or Bread can be correct answers, even though technically it's a different string)
+        if (strtolower($answer) === strtolower($this->answer)) {
+            return true;
+        }
+        return false;
         // Bonus (hard): can you allow answers with small typo's (max one character different)?
     }
 
@@ -27,13 +30,5 @@ class Word
     public function getWord()
     {
         return $this->word;
-    }
-
-    /**
-     * Get the value of answer
-     */
-    public function getAnswer()
-    {
-        return $this->answer;
     }
 }
