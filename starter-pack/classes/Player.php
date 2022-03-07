@@ -34,4 +34,15 @@ class Player
     {
         return $this->playerName;
     }
+
+    /**
+     * Set the value of score
+     *
+     * @return  self
+     */
+    public function setScore($score)
+    {
+        $this->score = $score;
+        // return $this->score;
+    }
 }

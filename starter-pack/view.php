@@ -18,9 +18,11 @@
 	<form action="index.php" method="post">
 		Translation: <input type="text" name="answer">
 		<input type="submit" value="submit">
+		<input type="submit" value="reset" name="reset">
 	</form>
 
 	<p><?php echo $game->resultMessage ?></p>
+
 </body>
 
 </html>

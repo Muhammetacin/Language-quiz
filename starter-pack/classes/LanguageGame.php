@@ -23,18 +23,14 @@ class LanguageGame
 
         if (isset($_SESSION['player'])) {
             $this->player = unserialize($_SESSION['player']);
-            // echo 'getting player from session';
         } else {
             $this->player = new Player('Mowtje');
             $_SESSION['player'] = serialize($this->player);
-            echo 'creating new player this time';
         }
 
         // if (isset($_SESSION['score'])) {
         //     $this->score = $_SESSION['score'];
-        //     // echo 'setting score from session';
         // } else {
-        //     echo 'getting score from player class';
         //     $this->score = $this->player->getScore();
         //     $_SESSION['score'] = $this->score;
         // }
@@ -46,6 +42,13 @@ class LanguageGame
     {
         $this->whatIsHappening();
         $this->pre_r($this->player);
+
+        // reset game
+        if (isset($_POST['reset'])) {
+            $this->resetPlayerScore();
+            // Refresh page
+            header("Refresh");
+        }
 
         // check for option A or B
         if (empty($_POST['answer'])) {
@@ -71,12 +74,7 @@ class LanguageGame
             if ($result) {
                 $this->resultMessage = 'Your translation is correct! You answered ' . $userInput . '.';
 
-                // Get player from session
-                $this->player = unserialize($_SESSION['player']);
-                // Update player's score (increment by 1)
-                $this->player->updateScore();
-                // Set player in SESSION with updated score
-                $_SESSION['player'] = serialize($this->player);
+                $this->updatePlayerScore();
 
                 // Show correct score
                 // $this->score = $this->player->getScore();
@@ -92,6 +90,26 @@ class LanguageGame
             // Refresh page in 1 second --> new word
             header("Refresh:1");
         }
+    }
+
+    private function updatePlayerScore()
+    {
+        // Get player from session
+        $this->player = unserialize($_SESSION['player']);
+        // Update player's score (increment by 1)
+        $this->player->updateScore();
+        // Set player in SESSION with updated score
+        $_SESSION['player'] = serialize($this->player);
+    }
+
+    private function resetPlayerScore()
+    {
+        // Get player from session
+        $this->player = unserialize($_SESSION['player']);
+        // Update player's score (increment by 1)
+        $this->player->setScore(0);
+        // Set player in SESSION with updated score
+        $_SESSION['player'] = serialize($this->player);
     }
 
     private function pre_r($arr)
