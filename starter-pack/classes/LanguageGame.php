@@ -60,8 +60,14 @@ class LanguageGame
         // reset game
         if (isset($_POST['reset'])) {
             $this->resetPlayerScore();
-            // Refresh page
-            header("Refresh");
+
+            // Reload page
+            header("Location: index.php");
+            exit();
+        }
+
+        if ($this->rightAnswer >= 10 || $this->wrongAnswer >= 10) {
+            header("Location: endgame.php");
         }
 
         // check for option A or B
@@ -91,9 +97,6 @@ class LanguageGame
                 if ($this->rightAnswer < 10) {
                     $_SESSION['rightAnswer'] = $this->rightAnswer + 1;
                 }
-                // else {
-                //     header("Location: endgame.php?rightAnswer=" . $_SESSION['rightAnswer'] . '&wrongAnswer=' . $_SESSION['wrongAnswer']);
-                // }
 
                 // Show correct score
                 // $this->score = $this->player->getScore();
@@ -106,9 +109,6 @@ class LanguageGame
                 if ($this->wrongAnswer < 10) {
                     $_SESSION['wrongAnswer'] = $this->wrongAnswer + 1;
                 }
-                // else {
-                //     header("Location: endgame.php?rightAnswer=" . $_SESSION['rightAnswer'] . '&wrongAnswer=' . $_SESSION['wrongAnswer']);
-                // }
 
                 $this->resultMessage = 'Your translation is incorrect :( You answered ' . $userInput . '.';
             }
@@ -136,6 +136,9 @@ class LanguageGame
         $this->player->setScore(0);
         // Set player in SESSION with updated score
         $_SESSION['player'] = serialize($this->player);
+
+        $_SESSION['rightAnswer'] = 0;
+        $_SESSION['wrongAnswer'] = 0;
     }
 
     private function pre_r($arr)
