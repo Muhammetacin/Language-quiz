@@ -11,7 +11,8 @@
 <body>
 	<!-- TODO: add a form for the user to play the game -->
 	<h1>Language game! Translate correctly to earn points</h1>
-	<h2>Score: <?php echo $game->player->getScore() ?></h2>
+	<h2>Score right answers: <?php echo $_SESSION['rightAnswer'] ?></h2>
+	<h2>Score wrong answers: <?php echo $_SESSION['wrongAnswer'] ?></h2>
 
 	<h2>Your word to translate is: <i><?php echo $_SESSION['word'] ?? $game->randomWord ?></i></h2>
 
@@ -19,10 +20,17 @@
 		Translation: <input type="text" name="answer">
 		<input type="submit" value="submit">
 		<input type="submit" value="reset" name="reset">
+		<!-- <input type="hidden" name="nickname"> -->
 	</form>
 
 	<p><?php echo $game->resultMessage ?></p>
 
 </body>
+
+<!-- <script type="text/javascript">
+	const results = prompt('namae wa?');
+	<?php $results = "<script>document.write(results)</script>" ?>
+</script>
+<?php echo $results; ?> -->
 
 </html>

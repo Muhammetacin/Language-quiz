@@ -6,6 +6,8 @@ class LanguageGame
     public string $randomWord;
     public string $resultMessage;
     public Player $player;
+    private int $rightAnswer;
+    private int $wrongAnswer;
 
     // public int $score;
 
@@ -19,7 +21,19 @@ class LanguageGame
             $this->words[] = new Word($frenchTranslation, $englishTranslation);
         }
 
+        if (isset($_SESSION['rightAnswer'])) {
+            $this->rightAnswer = $_SESSION['rightAnswer'];
+        } else {
+            $this->rightAnswer = 0;
+            $_SESSION['rightAnswer'] = $this->rightAnswer;
+        }
 
+        if (isset($_SESSION['wrongAnswer'])) {
+            $this->wrongAnswer = $_SESSION['wrongAnswer'];
+        } else {
+            $this->wrongAnswer = 0;
+            $_SESSION['wrongAnswer'] = $this->wrongAnswer;
+        }
 
         if (isset($_SESSION['player'])) {
             $this->player = unserialize($_SESSION['player']);
@@ -72,18 +86,30 @@ class LanguageGame
 
             // generate a message for the user that can be shown
             if ($result) {
-                $this->resultMessage = 'Your translation is correct! You answered ' . $userInput . '.';
-
                 $this->updatePlayerScore();
+
+                if ($this->rightAnswer < 10) {
+                    $_SESSION['rightAnswer'] = $this->rightAnswer + 1;
+                }
+                // else {
+                //     header("Location: endgame.php?rightAnswer=" . $_SESSION['rightAnswer'] . '&wrongAnswer=' . $_SESSION['wrongAnswer']);
+                // }
 
                 // Show correct score
                 // $this->score = $this->player->getScore();
                 // Update latest score in SESSION
                 // $_SESSION['score'] = $this->score;
 
-
+                $this->resultMessage = 'Your translation is correct! You answered ' . $userInput . '.';
             }
             if (!$result) {
+                if ($this->wrongAnswer < 10) {
+                    $_SESSION['wrongAnswer'] = $this->wrongAnswer + 1;
+                }
+                // else {
+                //     header("Location: endgame.php?rightAnswer=" . $_SESSION['rightAnswer'] . '&wrongAnswer=' . $_SESSION['wrongAnswer']);
+                // }
+
                 $this->resultMessage = 'Your translation is incorrect :( You answered ' . $userInput . '.';
             }
 
