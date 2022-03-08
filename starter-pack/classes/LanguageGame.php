@@ -8,6 +8,7 @@ class LanguageGame
     public Player $player;
     private int $rightAnswer;
     private int $wrongAnswer;
+    public string $nickname;
 
     // public int $score;
 
@@ -19,6 +20,25 @@ class LanguageGame
         foreach (Data::words() as $frenchTranslation => $englishTranslation) {
             // create instances of the Word class to be added to the words array
             $this->words[] = new Word($frenchTranslation, $englishTranslation);
+        }
+
+        if (isset($_SESSION['nickname'])) {
+            $this->nickname = $_SESSION['nickname'];
+        } else if (isset($_POST['nickname'])) {
+            $this->nickname = $_POST['nickname'];
+            $_SESSION['nickname'] = $this->nickname;
+        }
+        // else {
+        //     $this->nickname = 'Mowtje';
+        // }
+
+        if (isset($_SESSION['player'])) {
+            $this->player = unserialize($_SESSION['player']);
+        } else if (isset($_SESSION['nickname'])) {
+            $this->player = new Player($this->nickname);
+            $_SESSION['player'] = serialize($this->player);
+        } else {
+            $this->player = new Player('Mowtje the king', 9999);
         }
 
         if (isset($_SESSION['rightAnswer'])) {
@@ -33,13 +53,6 @@ class LanguageGame
         } else {
             $this->wrongAnswer = 0;
             $_SESSION['wrongAnswer'] = $this->wrongAnswer;
-        }
-
-        if (isset($_SESSION['player'])) {
-            $this->player = unserialize($_SESSION['player']);
-        } else {
-            $this->player = new Player('Mowtje');
-            $_SESSION['player'] = serialize($this->player);
         }
 
         // if (isset($_SESSION['score'])) {

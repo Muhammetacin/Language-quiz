@@ -10,7 +10,7 @@ class Player
     {
         // add 👤 automatically to their name
         $this->score = $score;
-        $this->playerName = '👤' . $playerName;
+        $this->playerName = '👤 ' . $playerName;
     }
 
     public function updateScore()

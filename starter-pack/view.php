@@ -1,3 +1,5 @@
+<?php $disabled = !empty($_SESSION['nickname']) ? "disabled='disabled'" : ""; ?>
+
 <!doctype html>
 <html lang="en">
 
@@ -11,26 +13,30 @@
 <body>
 	<!-- TODO: add a form for the user to play the game -->
 	<h1>Language game! Translate correctly to earn points</h1>
-	<h2>Score right answers: <?php echo $_SESSION['rightAnswer'] ?></h2>
-	<h2>Score wrong answers: <?php echo $_SESSION['wrongAnswer'] ?></h2>
 
-	<h2>Your word to translate is: <i><?php echo $_SESSION['word'] ?? $game->randomWord ?></i></h2>
+	<?php if (isset($_SESSION['nickname'])) { ?>
+		<h2>Score right answers: <?php echo $_SESSION['rightAnswer'] ?></h2>
+		<h2>Score wrong answers: <?php echo $_SESSION['wrongAnswer'] ?></h2>
+
+		<h2>Your word to translate is: <i><?php echo $_SESSION['word'] ?? $game->randomWord ?></i></h2>
+	<?php } ?>
 
 	<form action="index.php" method="post">
-		Translation: <input type="text" name="answer">
-		<input type="submit" value="submit">
-		<input type="submit" value="reset" name="reset">
-		<!-- <input type="hidden" name="nickname"> -->
+		What is your nickname?
+		<input type="text" name="nickname" <?php echo $disabled; ?> placeholder="<?php echo $_SESSION['nickname'] ?? '' ?>">
+		<input type="submit" value="register" <?php if (isset($_SESSION['nickname'])) { ?> disabled <?php   } ?>>
 	</form>
 
-	<p><?php echo $game->resultMessage ?></p>
+	<?php if (isset($_SESSION['nickname'])) { ?>
+		<form action=" index.php" method="post">
+			Translation: <input type="text" name="answer">
+			<input type="submit" value="submit">
+			<input type="submit" value="reset" name="reset">
+		</form>
 
+
+		<p><?php echo $game->resultMessage ?></p>
+	<?php } ?>
 </body>
-
-<!-- <script type="text/javascript">
-	const results = prompt('namae wa?');
-	<?php $results = "<script>document.write(results)</script>" ?>
-</script>
-<?php echo $results; ?> -->
 
 </html>
