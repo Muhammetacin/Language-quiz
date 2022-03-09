@@ -22,12 +22,15 @@ class Word
         }
         return false;
         // Bonus (hard): can you allow answers with small typo's (max one character different)?
+//        if(levenshtein($answer, $this->answer, 1, 1, 1) < 2) {
+//
+//        }
     }
 
     /**
      * Get the value of word
      */
-    public function getWord()
+    public function getWord(): string
     {
         return $this->word;
     }

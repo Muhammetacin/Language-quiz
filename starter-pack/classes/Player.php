@@ -3,46 +3,41 @@
 class Player
 {
     // add name and score
-    private int $score;
+    private int $rightScore;
+    private int $wrongScore;
     private string $playerName;
 
-    public function __construct(string $playerName, int $score = 0)
+    public function __construct(string $playerName, int $rightScore = 0, int $wrongScore = 0)
     {
         // add 👤 automatically to their name
-        $this->score = $score;
+        $this->rightScore = $rightScore;
+        $this->wrongScore = $wrongScore;
         $this->playerName = '👤 ' . $playerName;
     }
 
-    public function updateScore()
+    public function updateScore(bool $correctAnswer): int
     {
-        $this->score += 1;
-        return $this->score;
+        if($correctAnswer) {
+            $this->rightScore += 1;
+            return $this->rightScore;
+        }
+        $this->wrongScore += 1;
+        return $this->wrongScore;
     }
 
-    /**
-     * Get the value of score
-     */
-    public function getScore()
+    public function getRightScore(): int
     {
-        return $this->score;
+        return $this->rightScore;
     }
 
-    /**
-     * Get the value of playerName
-     */
-    public function getPlayerName()
+    public function getWrongScore(): int
     {
-        return $this->playerName;
+        return $this->wrongScore;
     }
 
-    /**
-     * Set the value of score
-     *
-     * @return  self
-     */
-    public function setScore($score)
+    public function resetScores()
     {
-        $this->score = $score;
-        // return $this->score;
+        $this->rightScore = 0;
+        $this->wrongScore = 0;
     }
 }

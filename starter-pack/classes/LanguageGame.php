@@ -3,14 +3,16 @@
 class LanguageGame
 {
     private array $words;
+    private Player $player;
+    private string $nickname;
+//    private int $rightScorePlayer;
+//    private int $wrongScorePlayer;
+
+    // public to show on the index page
+    public int $rightScorePlayer;
+    public int $wrongScorePlayer;
     public string $randomWord;
     public string $resultMessage;
-    public Player $player;
-    private int $rightAnswer;
-    private int $wrongAnswer;
-    public string $nickname;
-
-    // public int $score;
 
     public function __construct()
     {
@@ -28,39 +30,20 @@ class LanguageGame
             $this->nickname = $_POST['nickname'];
             $_SESSION['nickname'] = $this->nickname;
         }
-        // else {
-        //     $this->nickname = 'Mowtje';
-        // }
 
         if (isset($_SESSION['player'])) {
+            // get player from session
             $this->player = unserialize($_SESSION['player']);
+            $this->setPlayerScore();
         } else if (isset($_SESSION['nickname'])) {
+            // create player with nickname
             $this->player = new Player($this->nickname);
+            $this->setPlayerScore();
             $_SESSION['player'] = serialize($this->player);
         } else {
+            // init dummy player
             $this->player = new Player('Mowtje the king', 9999);
         }
-
-        if (isset($_SESSION['rightAnswer'])) {
-            $this->rightAnswer = $_SESSION['rightAnswer'];
-        } else {
-            $this->rightAnswer = 0;
-            $_SESSION['rightAnswer'] = $this->rightAnswer;
-        }
-
-        if (isset($_SESSION['wrongAnswer'])) {
-            $this->wrongAnswer = $_SESSION['wrongAnswer'];
-        } else {
-            $this->wrongAnswer = 0;
-            $_SESSION['wrongAnswer'] = $this->wrongAnswer;
-        }
-
-        // if (isset($_SESSION['score'])) {
-        //     $this->score = $_SESSION['score'];
-        // } else {
-        //     $this->score = $this->player->getScore();
-        //     $_SESSION['score'] = $this->score;
-        // }
 
         $this->resultMessage = 'Your translation is...';
     }
@@ -68,19 +51,18 @@ class LanguageGame
     public function run(): void
     {
         $this->whatIsHappening();
-        $this->pre_r($this->player);
+//        $this->pre_r($this->player);
 
-        // reset game
+        // reset score
         if (isset($_POST['reset'])) {
             $this->resetPlayerScore();
+            header("Refresh");
+        }
 
+        if(isset($_SESSION['resetGame'])) {
             // Reload page
             header("Location: index.php");
             exit();
-        }
-
-        if ($this->rightAnswer >= 10 || $this->wrongAnswer >= 10) {
-            header("Location: endgame.php");
         }
 
         // check for option A or B
@@ -89,41 +71,31 @@ class LanguageGame
             // select a random word for the user to translate   
             $randomWordObject = $this->words[rand(0, 7)];
             $this->randomWord = $randomWordObject->getWord();
-            $_SESSION['word'] = $this->randomWord;
+            $_SESSION['wordObject'] = serialize($randomWordObject);
         } else {
             // Option B: user has just submitted an answer
-            // verify the answer (use the verify function in the word class) - you'll need to get the used word from the array first
-            $this->randomWord = $_SESSION['word'];
+            $wordObject = unserialize($_SESSION['wordObject']);
+            $this->randomWord = $wordObject->getWord();
             $userInput = $_POST['answer'];
-            $result = false;
 
-            foreach ($this->words as $wordObject) {
-                if ($wordObject->getWord() === $this->randomWord) {
-                    $result = $wordObject->verify($userInput);
-                }
-            }
+            // verify the answer (use the verify function in the word class) - you'll need to get the used word from the array first
+            $result = $wordObject->verify($userInput);
 
             // generate a message for the user that can be shown
             if ($result) {
-                $this->updatePlayerScore();
-
-                if ($this->rightAnswer < 10) {
-                    $_SESSION['rightAnswer'] = $this->rightAnswer + 1;
-                }
-
-                // Show correct score
-                // $this->score = $this->player->getScore();
-                // Update latest score in SESSION
-                // $_SESSION['score'] = $this->score;
-
+                $this->rightScorePlayer = $this->updatePlayerScore(true);
                 $this->resultMessage = 'Your translation is correct! You answered ' . $userInput . '.';
             }
-            if (!$result) {
-                if ($this->wrongAnswer < 10) {
-                    $_SESSION['wrongAnswer'] = $this->wrongAnswer + 1;
-                }
 
+            if (!$result) {
+                $this->wrongScorePlayer = $this->updatePlayerScore(false);
                 $this->resultMessage = 'Your translation is incorrect :( You answered ' . $userInput . '.';
+            }
+
+            if ($this->rightScorePlayer >= 10 || $this->wrongScorePlayer >= 10) {
+                $_SESSION['endGameRightScore'] = $this->rightScorePlayer;
+                $_SESSION['endGameWrongScore'] = $this->wrongScorePlayer;
+                header("Location: endgame.php");
             }
 
             // Refresh page in 1 second --> new word
@@ -131,14 +103,21 @@ class LanguageGame
         }
     }
 
-    private function updatePlayerScore()
+    private function setPlayerScore() {
+        $this->rightScorePlayer = $this->player->getRightScore();
+        $this->wrongScorePlayer = $this->player->getWrongScore();
+    }
+
+    private function updatePlayerScore(bool $correctAnswer): int
     {
         // Get player from session
         $this->player = unserialize($_SESSION['player']);
-        // Update player's score (increment by 1)
-        $this->player->updateScore();
+        // Update score
+        $playerScore = $this->player->updateScore($correctAnswer);
         // Set player in SESSION with updated score
         $_SESSION['player'] = serialize($this->player);
+
+        return $playerScore;
     }
 
     private function resetPlayerScore()
@@ -146,12 +125,9 @@ class LanguageGame
         // Get player from session
         $this->player = unserialize($_SESSION['player']);
         // Update player's score (increment by 1)
-        $this->player->setScore(0);
+        $this->player->resetScores();
         // Set player in SESSION with updated score
         $_SESSION['player'] = serialize($this->player);
-
-        $_SESSION['rightAnswer'] = 0;
-        $_SESSION['wrongAnswer'] = 0;
     }
 
     private function pre_r($arr)
